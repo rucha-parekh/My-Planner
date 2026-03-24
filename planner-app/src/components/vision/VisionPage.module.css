@@ -1,0 +1,70 @@
+.page { padding: 32px; height: 100%; overflow-y: auto; position: relative; z-index: 1; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+.title { font-family: 'Playfair Display', serif; font-size: 30px; }
+.sub { font-size: 14px; color: var(--text3); margin-top: 4px; }
+
+.progressCard { margin-bottom: 24px; }
+.progressHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progressLabel { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+.progressPct { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--accent); }
+.progressBar { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+.progressFill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent3)); border-radius: 4px; transition: width 0.6s ease; }
+.progressNote { font-size: 13px; color: var(--text2); }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.catCard { padding: 16px 18px !important; }
+.catHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.catTitle { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 0.05em; }
+.catActions { display: flex; align-items: center; gap: 8px; }
+.catCount { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+.addGoalBtn {
+  width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--border);
+  background: none; color: var(--text3); font-size: 16px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+}
+.addGoalBtn:hover { border-color: var(--accent); color: var(--accent); background: rgba(201,112,90,0.08); }
+
+.goalList { display: flex; flex-direction: column; }
+.goal {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+  transition: opacity 0.15s;
+}
+.goal:last-of-type { border-bottom: none; }
+.goal.goalDone .goalText { text-decoration: line-through; opacity: 0.45; }
+
+.goalCheck {
+  width: 17px; height: 17px; border-radius: 5px; border: 1.5px solid var(--border);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: white; cursor: pointer; transition: all 0.15s;
+}
+.goalCheck:hover { border-color: var(--accent2); }
+
+.goalText { flex: 1; font-size: 13px; color: var(--text2); line-height: 1.4; cursor: pointer; }
+.goalText:hover { color: var(--text); }
+
+.deleteGoalBtn {
+  width: 20px; height: 20px; border-radius: 5px; border: none;
+  background: none; color: var(--text3); font-size: 10px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: all 0.15s;
+}
+.goal:hover .deleteGoalBtn { opacity: 1; }
+.deleteGoalBtn:hover { background: rgba(217,95,95,0.1); color: #d95f5f; }
+
+.emptyGoals { font-size: 12px; color: var(--text3); padding: 8px 0; text-align: center; }
+
+.addGoalInline {
+  margin-top: 10px; width: 100%; padding: 7px; border-radius: 8px;
+  border: 1.5px dashed var(--border); background: none; color: var(--text3);
+  font-size: 12px; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.addGoalInline:hover { border-color: var(--accent); color: var(--accent); background: rgba(201,112,90,0.04); }
+
+.label { font-size: 12px; font-weight: 600; color: var(--text2); display: block; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.04em; }
+.input {
+  width: 100%; padding: 9px 13px; border: 1px solid var(--border); border-radius: 9px;
+  font-size: 14px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.18s;
+}
+.input:focus { border-color: var(--accent); }

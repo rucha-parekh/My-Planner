@@ -1,0 +1,180 @@
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logoTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--accent);
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.logoSub {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 3px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nav {
+  padding: 14px 10px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.section {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text3);
+  padding: 12px 10px 4px;
+  font-weight: 600;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  transition: all 0.18s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.navItem:hover { background: var(--surface2); color: var(--text); }
+.navItem.active { background: var(--accent); color: white; }
+.icon { font-size: 14px; width: 18px; text-align: center; }
+
+/* Weather widget */
+.weatherWidget {
+  margin: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #3d7a55, #2d6b45);
+  border-radius: 14px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.weatherTop {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.weatherTemp {
+  font-size: 20px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+}
+
+.weatherDesc {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.weatherGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.wStat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.wLabel {
+  font-size: 9px;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wVal {
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+}
+
+.weatherAdvice {
+  font-size: 10px;
+  opacity: 0.85;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 5px 8px;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.weatherLocation {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* User row */
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.userInfo { flex: 1; min-width: 0; }
+.userName { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gcalStatus { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+.signOutBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text3);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.signOutBtn:hover { background: var(--surface2); color: var(--text); }

@@ -1,0 +1,43 @@
+.page { padding: 32px; height: 100%; overflow-y: auto; position: relative; z-index: 1; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+.title { font-family: 'Playfair Display', serif; font-size: 30px; }
+.sub { font-size: 14px; color: var(--text3); margin-top: 4px; }
+
+.habitList { display: flex; flex-direction: column; gap: 16px; }
+
+.habitCard { padding: 20px 22px !important; }
+
+.habitHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+.habitInfo { display: flex; align-items: center; gap: 10px; }
+.habitEmoji { font-size: 20px; }
+.habitName { font-size: 16px; font-weight: 600; }
+
+.habitStats { display: flex; align-items: center; gap: 12px; }
+.streak { font-size: 13px; color: var(--accent); font-weight: 600; font-family: 'DM Mono', monospace; }
+.monthCount { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+.dotGrid { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+.dot {
+  width: 26px; height: 26px; border-radius: 6px;
+  border: 1.5px solid var(--border); background: none;
+  font-size: 10px; font-family: 'DM Mono', monospace; color: var(--text3);
+  transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+}
+.dot:hover:not(:disabled) { border-color: var(--accent2); color: var(--text); }
+.dot.done { background: var(--accent2); border-color: var(--accent2); color: white; font-size: 0; }
+.dot.done::after { content: '✓'; font-size: 11px; }
+.dot.todayDot { border-color: var(--accent); border-width: 2px; color: var(--accent); font-weight: 700; }
+.dot.done.todayDot { background: var(--accent); border-color: var(--accent); }
+.dot.future { opacity: 0.25; cursor: not-allowed; }
+
+.progressBar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+.progressFill { height: 100%; background: var(--accent2); border-radius: 2px; transition: width 0.4s ease; }
+
+.formGroup { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 13px; font-weight: 500; color: var(--text2); }
+.input {
+  padding: 9px 13px; border: 1px solid var(--border); border-radius: 9px;
+  font-size: 14px; background: var(--bg); color: var(--text); outline: none;
+  transition: border-color 0.18s; width: 100%;
+}
+.input:focus { border-color: var(--accent); }

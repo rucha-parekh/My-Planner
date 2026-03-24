@@ -1,0 +1,82 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  padding: 48px 40px;
+  width: 420px;
+  max-width: 92vw;
+  text-align: center;
+  box-shadow: 0 8px 40px var(--shadow-md);
+}
+
+.logo {
+  font-size: 40px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  font-family: 'Playfair Display', serif;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.sub { font-size: 14px; color: var(--text3); margin-bottom: 28px; }
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.feature {
+  font-size: 13px;
+  color: var(--text2);
+  padding: 8px 14px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px;
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+
+.googleBtn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.googleBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.error { font-size: 13px; color: #c94f4f; margin-bottom: 12px; }
+
+.note {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.6;
+  margin-top: 8px;
+}
