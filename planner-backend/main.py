@@ -30,8 +30,12 @@ app = FastAPI(title="Planner API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173",
-                   "https://my-planner.web.app", "https://my-planner.firebaseapp.com"],
+    allow_origins=[
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://my-planner-491107.web.app",
+    "https://my-planner-491107.firebaseapp.com",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
