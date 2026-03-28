@@ -1,22 +1,26 @@
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-import httpx
+import firebase_admin
+from firebase_admin import credentials
 import os
+import json
 from dotenv import load_dotenv
 
 from routes import weather, schedule, calendar, user
 
-import firebase_admin
-from firebase_admin import credentials, firestore, auth
-
-# Initialize Firebase Admin
-cred = credentials.Certificate("firebase-credentials.json")
-firebase_admin.initialize_app(cred)
-
-db = firestore.client()
-
 load_dotenv()
+
+# Initialize Firebase once at startup
+if not firebase_admin._apps:
+    creds_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+    cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH", "./firebase-credentials.json")
+    if creds_json:
+        cred = credentials.Certificate(json.loads(creds_json))
+        firebase_admin.initialize_app(cred)
+    elif os.path.exists(cred_path):
+        cred = credentials.Certificate(cred_path)
+        firebase_admin.initialize_app(cred)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,7 +30,8 @@ app = FastAPI(title="Planner API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173",
+                   "https://my-planner.web.app", "https://my-planner.firebaseapp.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
