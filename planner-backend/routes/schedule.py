@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-import anthropic
 import os
 import json
 import httpx
@@ -9,7 +8,6 @@ from datetime import datetime, timedelta
 import pytz
 
 router = APIRouter()
-
 IST = pytz.timezone("Asia/Kolkata")
 
 class ScheduleRequest(BaseModel):
@@ -19,7 +17,7 @@ class ScheduleRequest(BaseModel):
     energy_level: str = "medium"
     custom_prompt: str = ""
     weather: Optional[dict] = None
-    google_access_token: Optional[str] = None  # if provided, auto-push to GCal
+    google_access_token: Optional[str] = None
     auto_push: bool = False
 
 def build_prompt(req: ScheduleRequest) -> str:
@@ -54,13 +52,12 @@ Tasks to schedule:
 {task_lines}
 
 Rules:
-1. Yoga/exercise ALWAYS in the morning, right after wake-up
+1. Yoga/exercise ALWAYS in the morning right after wake-up
 2. Deep work (career, finance tasks) in morning peak hours
-3. If feels_like > 35°C or AQI > 100 — NO outdoor tasks in afternoon, move to morning or evening
+3. If feels_like > 35C or AQI > 100 — NO outdoor tasks in afternoon
 4. Block college hours completely
-5. Include 10-15 min breaks between focus blocks
-6. Evening: wind down tasks, journalling, reading
-7. Be realistic — don't over-schedule
+5. Include short breaks between focus blocks
+6. Evening: wind down, journal, read
 
 Return ONLY a valid JSON array, no markdown, no explanation:
 [
@@ -69,63 +66,62 @@ Return ONLY a valid JSON array, no markdown, no explanation:
 ]"""
 
 async def push_to_gcal(schedule: list[dict], access_token: str):
-    """Push each schedule item to Google Calendar."""
     today = datetime.now(IST).date()
     headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
     results = []
-
     async with httpx.AsyncClient(timeout=15) as client:
         for item in schedule:
             try:
                 h, m = map(int, item["time"].split(":"))
                 start_dt = IST.localize(datetime.combine(today, datetime.min.time().replace(hour=h, minute=m)))
                 end_dt = start_dt + timedelta(minutes=item.get("duration", 30))
-
                 event = {
                     "summary": item["title"],
                     "description": item.get("note", ""),
                     "start": {"dateTime": start_dt.isoformat(), "timeZone": "Asia/Kolkata"},
                     "end":   {"dateTime": end_dt.isoformat(),   "timeZone": "Asia/Kolkata"},
-                    "colorId": {"health": "2", "career": "6", "personal": "3",
-                                "finance": "5", "spiritual": "7"}.get(item.get("category", ""), "1"),
+                    "colorId": {"health": "2", "career": "6", "personal": "3", "finance": "5", "spiritual": "7"}.get(item.get("category", ""), "1"),
                 }
-
                 res = await client.post(
                     "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-                    headers=headers,
-                    json=event,
+                    headers=headers, json=event,
                 )
                 results.append({"title": item["title"], "success": res.status_code == 200})
             except Exception as e:
                 results.append({"title": item.get("title", "?"), "success": False, "error": str(e)})
-
     return results
 
 @router.post("")
 async def generate_schedule(req: ScheduleRequest):
-    api_key = os.getenv("ANTHROPIC_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY not set in .env")
+        raise HTTPException(status_code=500, detail="GEMINI_API_KEY not set in .env")
 
-    client = anthropic.Anthropic(api_key=api_key)
+    prompt = build_prompt(req)
+
+    # Call Gemini API
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 1500}
+    }
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        res = await client.post(url, json=payload)
+        if res.status_code != 200:
+            raise HTTPException(status_code=500, detail=f"Gemini error: {res.text}")
+        data = res.json()
 
     try:
-        message = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1500,
-            messages=[{"role": "user", "content": build_prompt(req)}],
-        )
-        text = message.content[0].text.strip()
-        # Strip markdown fences if present
-        if text.startswith("```"):
+        text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        # Strip markdown fences
+        if "```" in text:
             text = text.split("```")[1]
             if text.startswith("json"):
                 text = text[4:]
         schedule = json.loads(text.strip())
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="AI returned invalid JSON. Try again.")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        raise HTTPException(status_code=500, detail="AI returned invalid response. Try again.")
 
     gcal_results = None
     if req.auto_push and req.google_access_token:
