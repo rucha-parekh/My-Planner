@@ -19,10 +19,9 @@ def aqi_label(aqi: float) -> tuple[str, str]:
     if aqi <= 100: return "Moderate", "🟡"
     if aqi <= 150: return "Unhealthy for sensitive groups", "🟠"
     if aqi <= 200: return "Unhealthy", "🔴"
-    if aqi <= 300: return "Very Unhealthy", "🟣"
-    return "Hazardous", "🟤"
+    return "Very Unhealthy", "🟣"
 
-def outdoor_advice(temp: float, feels_like: float, aqi: float, code: int) -> str:
+def outdoor_advice(feels_like: float, aqi: float, code: int) -> str:
     reasons = []
     if feels_like > 35: reasons.append(f"feels like {round(feels_like)}°C")
     if aqi > 100: reasons.append("poor air quality")
@@ -36,48 +35,52 @@ def outdoor_advice(temp: float, feels_like: float, aqi: float, code: int) -> str
 @router.get("")
 async def get_weather(lat: float = Query(19.076), lon: float = Query(72.8777)):
     async with httpx.AsyncClient(timeout=10) as client:
-        # Main weather
         weather_url = (
             f"https://api.open-meteo.com/v1/forecast"
             f"?latitude={lat}&longitude={lon}"
-            f"&current=temperature_2m,apparent_temperature,relative_humidity_2m,"
-            f"weathercode,windspeed_10m,precipitation"
+            f"&current_weather=true"
+            f"&hourly=relativehumidity_2m,apparent_temperature"
             f"&timezone=Asia/Kolkata"
+            f"&forecast_days=1"
         )
-        # Air quality
         aqi_url = (
             f"https://air-quality-api.open-meteo.com/v1/air-quality"
             f"?latitude={lat}&longitude={lon}"
-            f"&current=us_aqi,pm2_5,pm10"
+            f"&current=us_aqi,pm2_5"
             f"&timezone=Asia/Kolkata"
         )
 
         weather_res = await client.get(weather_url)
         aqi_res = await client.get(aqi_url)
 
-        w = weather_res.json()["current"]
-        a = aqi_res.json()["current"]
+        weather_data = weather_res.json()
+        aqi_data = aqi_res.json()
 
-        temp = round(w["temperature_2m"])
-        feels_like = round(w["apparent_temperature"])
-        humidity = round(w["relative_humidity_2m"])
-        code = int(w["weathercode"])
-        wind = round(w["windspeed_10m"])
-        precip = w.get("precipitation", 0)
+        # current_weather block
+        cw = weather_data.get("current_weather", {})
+        temp = round(cw.get("temperature", 0))
+        code = int(cw.get("weathercode", 0))
+        wind = round(cw.get("windspeed", 0))
 
-        us_aqi = a.get("us_aqi", 0) or 0
-        pm25 = round(a.get("pm2_5", 0) or 0, 1)
+        # Get feels like and humidity from hourly (first hour = now)
+        hourly = weather_data.get("hourly", {})
+        feels_like = round(hourly.get("apparent_temperature", [temp])[0])
+        humidity = round(hourly.get("relativehumidity_2m", [0])[0])
+
+        # AQI
+        aqi_current = aqi_data.get("current", {})
+        us_aqi = aqi_current.get("us_aqi", 0) or 0
+        pm25 = round(aqi_current.get("pm2_5", 0) or 0, 1)
 
         desc, emoji = weather_code_desc(code)
         aqi_text, aqi_emoji = aqi_label(us_aqi)
-        advice = outdoor_advice(temp, feels_like, us_aqi, code)
+        advice = outdoor_advice(feels_like, us_aqi, code)
 
         return {
             "temp": temp,
             "feels_like": feels_like,
             "humidity": humidity,
             "wind": wind,
-            "precipitation": precip,
             "description": desc,
             "emoji": emoji,
             "aqi": round(us_aqi),
